@@ -14,7 +14,7 @@ const OMAR_SMILE_TALKS = [
   "I was thinking about that recipe you taught me... honestly you're a mastermind in the kitchen and in my heart.",
   "If you don't smile in the next 3 seconds, I'm going to have to hug you until you giggle.",
   "Remember: you're the god of all girlfriends, and nobody makes me laugh the way you do.",
-  "Mesh mesh, my beautiful goddess... I'm right here with you, always."
+  "Ya qalbi, my beautiful goddess, I'm right here with you. I know that you're shy, but you can smile to me — I will always be so grateful to see that smile."
 ];
 
 export const ComfortHub: React.FC = () => {

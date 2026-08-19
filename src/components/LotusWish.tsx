@@ -1,47 +1,43 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { Sparkles, Moon, RefreshCw, Heart, Upload, X, Crown, Play } from 'lucide-react';
+import { Sparkles, Moon, RefreshCw, Heart } from 'lucide-react';
 import { romanticAudio } from '../utils/audio';
-import { mediaStorage } from '../utils/mediaStorage';
+
+const LOTUS_WISHES: string[] = [
+  "I wish that tomorrow is kinder to you.",
+  "I wish that tonight brings you the deepest, most peaceful rest.",
+  "I wish that all the heavy thoughts in your mind turn into quiet, gentle breeze.",
+  "I wish you remember how soft and precious you are, even on the hardest days.",
+  "I wish that tomorrow brings you a sudden reason to smile until your cheeks hurt.",
+  "I wish that every bit of stress you carried today melts away before you wake up.",
+  "I wish that warmth wraps around your heart whenever you feel lonely or tired.",
+  "I wish that life treats you with the same gentleness you give to everyone around you.",
+  "I wish you never forget that you don't have to carry the whole world on your own.",
+  "I wish that whatever feels impossible tonight feels lighter and clearer tomorrow.",
+  "I wish that peaceful dreams find you and whisper how deeply loved you are.",
+  "I wish for your heart to feel safe, held, and at ease right now.",
+  "I wish that tomorrow is filled with little moments that make your heart feel warm.",
+  "I wish that every worry in your chest is replaced by calm and quiet comfort.",
+  "I wish you could see yourself through my eyes and know how truly wonderful you are."
+];
 
 export const LotusWish: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const [wishIndex, setWishIndex] = useState(0);
   const [ripples, setRipples] = useState<number[]>([]);
-  const [lotusMedia, setLotusMedia] = useState<{
-    type: 'photo' | 'video';
-    dataUrl: string;
-    name: string;
-  } | null>(null);
-  const fileInputRef = useRef<HTMLInputElement | null>(null);
 
-  useEffect(() => {
-    // Load stored golden media if available
-    mediaStorage.getGoldenMedia().then((media) => {
-      if (media) setLotusMedia(media);
-    });
-  }, []);
-
-  const handleMediaUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files[0]) {
-      const file = e.target.files[0];
-      const saved = await mediaStorage.saveGoldenMedia(file);
-      setLotusMedia(saved);
-      if (!isOpen) {
-        setIsOpen(true);
-        setRipples([Date.now(), Date.now() + 300, Date.now() + 600]);
-      }
-      romanticAudio.play();
-    }
-  };
-
-  const handleBloom = () => {
+  const handleBloomOrNext = () => {
     if (!isOpen) {
       setIsOpen(true);
       setRipples([Date.now(), Date.now() + 300, Date.now() + 600]);
       romanticAudio.play();
+    } else {
+      // Advance to next supportive wish with ripple and shimmer
+      setWishIndex((prev) => (prev + 1) % LOTUS_WISHES.length);
+      setRipples([Date.now(), Date.now() + 300]);
+      romanticAudio.play();
     }
   };
-
 
   const handleClose = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -59,7 +55,7 @@ export const LotusWish: React.FC = () => {
           The Lotus Wish
         </h2>
         <p className="font-sans text-stone-400 text-sm mt-2 max-w-md mx-auto">
-          A sacred water lotus resting on peaceful moonlit waters. Touch the blossom to watch it bloom.
+          A sacred water lotus resting on peaceful moonlit waters. Touch the blossom to watch it bloom and receive a wish.
         </p>
       </div>
 
@@ -70,7 +66,7 @@ export const LotusWish: React.FC = () => {
 
         {/* Ambient Floating Starlight Spores */}
         <div className="absolute inset-0 pointer-events-none overflow-hidden">
-          {Array.from({ length: 12 }).map((_, i) => (
+          {Array.from({ length: 14 }).map((_, i) => (
             <motion.div
               key={i}
               initial={{
@@ -81,13 +77,13 @@ export const LotusWish: React.FC = () => {
               }}
               animate={{
                 y: `${10 + Math.random() * 40}%`,
-                opacity: [0, 0.8, 0],
-                scale: [0.3, 1, 0.4],
+                opacity: [0, 0.85, 0],
+                scale: [0.3, 1.1, 0.4],
               }}
               transition={{
                 duration: 4 + Math.random() * 3,
                 repeat: Infinity,
-                delay: i * 0.5,
+                delay: i * 0.4,
                 ease: 'easeInOut',
               }}
               className="absolute w-1.5 h-1.5 rounded-full bg-rose-300 shadow-[0_0_8px_rgba(244,63,94,0.8)]"
@@ -112,13 +108,13 @@ export const LotusWish: React.FC = () => {
         <div className="relative z-20 text-center">
           <span className="text-[11px] font-sans text-cyan-300/80 uppercase tracking-widest flex items-center justify-center gap-1.5">
             <Sparkles className="w-3.5 h-3.5 text-amber-300" />
-            <span>{isOpen ? 'Blossomed in Full Radiance' : 'Touch The Lotus To Awaken'}</span>
+            <span>{isOpen ? 'Blossomed in Full Radiance • Tap for another wish' : 'Touch The Lotus To Awaken'}</span>
           </span>
         </div>
 
         {/* Center Botanical Realistic SVG Lotus & Lily Pad */}
         <div
-          onClick={handleBloom}
+          onClick={handleBloomOrNext}
           className="relative z-20 my-auto cursor-pointer group flex flex-col items-center justify-center"
         >
           {/* Radial Lotus Glow Aura */}
@@ -387,73 +383,33 @@ export const LotusWish: React.FC = () => {
           )}
         </div>
 
-        {/* Revealed Sacred Message & Keepsake with Gentle Illumination */}
-        <div className="relative z-30 min-h-[90px] w-full flex flex-col items-center justify-center text-center max-w-md mx-auto">
-          <input
-            ref={fileInputRef}
-            type="file"
-            accept="image/*,video/*"
-            onChange={handleMediaUpload}
-            className="hidden"
-          />
-
-          <AnimatePresence>
+        {/* Revealed Sacred Wish */}
+        <div className="relative z-30 min-h-[90px] w-full flex flex-col items-center justify-center text-center max-w-md mx-auto px-2">
+          <AnimatePresence mode="wait">
             {isOpen && (
               <motion.div
-                initial={{ opacity: 0, y: 15, scale: 0.95 }}
+                key={wishIndex}
+                initial={{ opacity: 0, y: 12, scale: 0.97 }}
                 animate={{ opacity: 1, y: 0, scale: 1 }}
-                exit={{ opacity: 0, y: -10 }}
-                transition={{ duration: 1.2, delay: 0.3 }}
+                exit={{ opacity: 0, y: -10, scale: 0.97 }}
+                transition={{ duration: 0.6 }}
                 className="w-full space-y-3"
               >
-                {lotusMedia ? (
-                  <div className="relative max-w-xs mx-auto rounded-2xl overflow-hidden border-2 border-amber-300/80 shadow-[0_0_30px_rgba(251,191,36,0.4)] bg-black">
-                    {lotusMedia.type === 'video' ? (
-                      <video
-                        src={lotusMedia.dataUrl}
-                        controls
-                        autoPlay
-                        loop
-                        playsInline
-                        className="w-full max-h-56 object-contain"
-                      />
-                    ) : (
-                      <img
-                        src={lotusMedia.dataUrl}
-                        alt="Lotus Keepsake"
-                        className="w-full max-h-56 object-contain"
-                      />
-                    )}
-                    <button
-                      onClick={() => fileInputRef.current?.click()}
-                      className="absolute top-2 right-2 p-1.5 rounded-full bg-stone-950/80 text-amber-200 hover:text-white border border-amber-400/40 text-xs"
-                      title="Replace media"
-                    >
-                      <Upload className="w-3 h-3" />
-                    </button>
-                  </div>
-                ) : (
-                  <>
-                    <h3 className="font-serif text-2xl sm:text-3xl text-amber-100 font-light tracking-wide drop-shadow-[0_2px_12px_rgba(251,191,36,0.4)]">
-                      “I hope tomorrow is kinder to you.”
-                    </h3>
-                    <p className="font-arabic text-rose-300 text-base sm:text-lg">
-                      أتمنى أن يكون الغد ألطف بك يا قمر
-                    </p>
-                  </>
-                )}
+                <h3 className="font-serif text-xl sm:text-2xl md:text-3xl text-amber-100 font-light tracking-wide leading-snug drop-shadow-[0_2px_14px_rgba(251,191,36,0.45)]">
+                  “{LOTUS_WISHES[wishIndex]}”
+                </h3>
 
-                <div className="pt-2 flex items-center justify-center gap-2">
+                <div className="pt-2 flex items-center justify-center gap-3">
                   <button
-                    onClick={() => fileInputRef.current?.click()}
-                    className="px-3 py-1.5 rounded-xl bg-amber-950/60 hover:bg-amber-900/80 border border-amber-500/40 text-amber-200 text-xs font-sans transition-all flex items-center gap-1 cursor-pointer"
+                    onClick={handleBloomOrNext}
+                    className="px-4 py-1.5 rounded-xl bg-gradient-to-r from-rose-600 to-pink-600 hover:from-rose-500 hover:to-pink-500 text-white text-xs font-sans font-medium transition-all shadow-[0_4px_15px_rgba(244,63,94,0.35)] flex items-center gap-1.5 cursor-pointer hover:scale-105 active:scale-95"
                   >
-                    <Upload className="w-3 h-3" />
-                    <span>{lotusMedia ? 'Change Photo/Video' : 'Put Photo or Video Inside'}</span>
+                    <Sparkles className="w-3 h-3 text-amber-200" />
+                    <span>Another Wish ({wishIndex + 1}/{LOTUS_WISHES.length})</span>
                   </button>
                   <button
                     onClick={handleClose}
-                    className="px-3 py-1.5 rounded-xl bg-stone-900/80 hover:bg-stone-800 border border-stone-700 text-stone-400 hover:text-stone-200 text-xs font-sans transition-all flex items-center gap-1 cursor-pointer"
+                    className="px-3.5 py-1.5 rounded-xl bg-stone-900/80 hover:bg-stone-800 border border-stone-700 text-stone-400 hover:text-stone-200 text-xs font-sans transition-all flex items-center gap-1.5 cursor-pointer"
                   >
                     <RefreshCw className="w-3 h-3" />
                     <span>Rest Lotus</span>

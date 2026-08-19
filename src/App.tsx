@@ -11,6 +11,7 @@ import { ComfortHub } from './components/ComfortHub';
 import { MemoryGarden } from './components/MemoryGarden';
 import { ReasonsCounter } from './components/ReasonsCounter';
 import { LotusWish } from './components/LotusWish';
+import { SushiDate } from './components/SushiDate';
 import { IslandScene } from './components/IslandScene';
 import { RainToSunScene } from './components/RainToSunScene';
 import { LofaOmarMiniGame } from './components/LofaOmarMiniGame';
@@ -134,7 +135,10 @@ export function App() {
                 {/* 5. Lotus Wish */}
                 <LotusWish />
 
-                {/* 6. Sanctuary Island Scene */}
+                {/* 6. A Quiet Sushi Date */}
+                <SushiDate />
+
+                {/* 7. Sanctuary Island Scene */}
                 <IslandScene />
 
                 {/* 7. Rain → Beautiful World Scene */}
