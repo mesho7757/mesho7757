@@ -1,0 +1,8 @@
+{
+  "name": "Omar & Alaf - A World For My Moon",
+  "description": "An intimate, romantic sanctuary and interactive digital love letter created by Omar for Alaf.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
